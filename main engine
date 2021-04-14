@@ -1,0 +1,93 @@
+#from timer import *
+from time import *
+import sys
+import threading
+import schedule
+from datetime import datetime
+import pickle
+
+d = datetime.now() #today's datetime
+#print(d.weekday()) #day of week - Monday is 0 and Sunday is 6
+#print(d.year)
+#print(d.month)
+#print(d.day)
+print(d.hour)
+print(d.minute)
+
+#Store Data
+storeData = {1:"20",2:"42",3:"end"}
+pickle_out = open("conf.pickle","wb")
+pickle.dump(storeData, pickle_out)
+pickle_out.close()
+
+#Read Data
+pickle_in = open("conf.pickle","rb")
+readData = pickle.load(pickle_in)
+
+print (readData)
+print (readData[1])
+print (readData[2])
+
+hour = (readData[1])
+sep = ":"
+min1 = int(readData[2])
+print(min1)
+min2 = min1 + 1
+min3 = min2 + 1
+min4 = min3 + 1
+if min1 <= 9:
+	min1 = str(0)+str(min1)
+if min2 <= 9:
+	min2 = str(0)+str(min2)
+if min3 <= 9:
+	min3 = str(0)+str(min3)
+if min4 <= 9:
+	min4 = str(0)+str(min4)
+
+s_min1 = str(min1)
+s_min2 = str(min2)
+s_min3 = str(min3)
+s_min4 = str(min4)
+
+startH1 = (hour + sep + s_min1)
+startH2 = (hour + sep + s_min2)
+startH3 = (hour + sep + s_min3)
+startH4 = (hour + sep + s_min4)
+
+print(startH1)
+print(startH2)
+print(startH3)
+print(startH4)
+	
+def start_run():
+	#execute 90 minutes engine
+	timer_run_thread = threading.Thread(target = timer90)
+	timer_run_thread.start()	
+runNum=0
+def timer90():
+	minTimer = 0	
+	while minTimer < 5:		
+		minTimer = minTimer + 1		
+		print("count", minTimer)
+		sleep(10)	
+	global runNum
+	runNum = runNum +1	
+	print(runNum)
+	
+#schedule
+schedule.every().day.at(startH1).do(start_run)
+schedule.every().day.at(startH2).do(start_run)
+schedule.every().day.at(startH3).do(start_run)
+schedule.every().day.at(startH4).do(start_run)
+
+#match the date
+def match_date():
+	while True:		
+		#print(cek_num)
+		schedule.run_pending()
+		sleep(2)
+
+match_date_thread = threading.Thread(target = match_date)
+match_date_thread.start()
+#System Terminate all process
+sys.exit()	
